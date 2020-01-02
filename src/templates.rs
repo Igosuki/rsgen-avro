@@ -12,6 +12,13 @@ use uuid::Uuid;
 
 use crate::error::{Error, Result};
 
+pub const SERDE_TERA: &str = "serde.tera";
+pub const SERDE_TEMPLATE: &str =
+    "use serde::{Deserialize{% if nullable %}, Deserializer{% endif %}, Serialize};
+use lazy_static;
+use avro_rs::schema::Schema;
+";
+
 pub const DESER_NULLABLE: &str = r#"
 macro_rules! deser(
     ($name:ident, $rtype:ty, $val:expr) => (
@@ -31,6 +38,11 @@ pub const RECORD_TEMPLATE: &str = r#"
 {%- if doc %}
 /// {{ doc }}
 {%- endif %}
+
+lazy_static! {
+    pub static ref {{ name | upper }}_SCHEMA : Schema = Schema::parse_str({{ schema }}).unwrap();
+}
+
 #[derive(Debug, PartialEq, Clone, serde::Deserialize, serde::Serialize)]
 #[serde(default)]
 pub struct {{ name }} {
@@ -408,6 +420,8 @@ impl Templater {
             ctx.insert("types", &t);
             ctx.insert("originals", &o);
             ctx.insert("defaults", &d);
+            let schema_string = serde_json::to_string(&serde_json::to_string(schema).unwrap()).unwrap();
+            ctx.insert("schema", schema_string.as_str());
             if self.nullable {
                 ctx.insert("nullable", &true);
             }

@@ -26,8 +26,7 @@ checksum = "cdb031dd78e28731d87d56cc8ffef4a8f36ca26c38fe2de700543e627f8a464a"
 [[package]]
 name = "avro-rs"
 version = "0.13.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ece550dd6710221de9bcdc1697424d8eee4fc4ca7e017479ea9d50c348465e37"
+source = "git+https://github.com/Igosuki/avro-rs.git?branch=master_merge#d02c24a384632a9ac981eca40971e369972d5e59"
 dependencies = [
  "byteorder",
  "digest 0.9.0",
@@ -35,6 +34,7 @@ dependencies = [
  "libflate",
  "num-bigint",
  "rand 0.7.3",
+ "regex",
  "serde",
  "serde_json",
  "strum",
