@@ -44,13 +44,13 @@ impl Generator {
         match source {
             Source::Schema(schema) => {
                 let mut deps = deps_stack(schema, vec![]);
-                self.gen_in_order(&mut deps, output)?;
+                self.gen_for_schema(&mut deps, output)?;
             }
 
             Source::SchemaStr(raw_schema) => {
                 let schema = Schema::parse_str(&raw_schema)?;
                 let mut deps = deps_stack(&schema, vec![]);
-                self.gen_in_order(&mut deps, output)?;
+                self.gen_for_schema(&mut deps, output)?;
             }
 
             Source::GlobPattern(pattern) => {
@@ -68,11 +68,27 @@ impl Generator {
                     .iter()
                     .fold(vec![], |deps, schema| deps_stack(&schema, deps));
 
-                self.gen_in_order(&mut deps, output)?;
+                self.gen_for_schema(&mut deps, output)?;
             }
         }
 
         Ok(())
+    }
+
+    /// Given an Avro `schema`:
+    /// If the schema is a protocol, generate types for each schema in the protocol
+    /// otherwise simply generate types for the single schema
+    fn gen_for_schema(&self, raw_schema: String, output: &mut impl Write) -> Result<()> {
+        let raw_str = raw_schema.as_ref();
+
+        if Schema::is_protocol(raw_str) {
+            let protocol = Schema::parse_protocol(raw_str)?;
+            let schemas : Vec<&Schema> = protocol.values().into_iter().collect();
+            schemas.into_iter().map(|schema| self.gen_in_order(&schema, output)).collect()
+        } else {
+            let schema = Schema::parse_str(&raw_schema)?;
+            self.gen_in_order(&schema, output)
+        }
     }
 
     /// Given an Avro `schema`:
