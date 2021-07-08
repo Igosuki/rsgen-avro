@@ -41,7 +41,7 @@ checksum = "cdb031dd78e28731d87d56cc8ffef4a8f36ca26c38fe2de700543e627f8a464a"
 [[package]]
 name = "avro-rs"
 version = "0.6.6"
-source = "git+ssh://git@github.com/Igosuki/avro-rs.git#e26dfd4879ec877ad77a562878048e6a33978581"
+source = "git+https://github.com/Igosuki/avro-rs.git#e26dfd4879ec877ad77a562878048e6a33978581"
 dependencies = [
  "digest",
  "failure",
